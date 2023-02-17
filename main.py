@@ -1,8 +1,3 @@
-# This is a sample Python script.
-
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
-
 import numpy as np
 
 
@@ -81,24 +76,47 @@ def diag_winner(board):
     return 0
 
 
-
 def get_winner(board):
     # return 0 if no winner, 1 if player 1, 2 if player 2
     # winner if four in a row horiz, diag, or vert
     return horiz_winner(board) or vert_winner(board) or diag_winner(board)
 
 
+def coerce_input(input):
+    coerced_input = -1
+    try:
+        coerced_input = int(input)
+    except ValueError:
+        print("""You didn't enter a valid value.
+        Enter an integer between 0 and 6.""")
+        return -1
+
+    if coerced_input > 6 or coerced_input < 0:
+        print("""You didn't enter a valid value.
+                Enter an integer between 0 and 6.""")
+        return -1
+
+    return coerced_input
+
+
+
 def run_game(turn, board, game_over):
     while not game_over:
         print(board)
         print("  0 1 2 3 4 5 6  ")  # make this dynamic with width of board
-
+        player_going = True
         if turn % 2 == 0:
-            col_selection = int(input("Player 1, make your selection (0-6)!"))
-            add_next_piece(col_selection, 1)
+            while player_going:
+                col_selection = coerce_input(input("Player 1, make your selection (0-6)!"))
+                if col_selection >= 0:
+                    add_next_piece(col_selection, 1)
+                    player_going = False
         else:
-            col_selection = int(input("Player 2, make your selection (0-6)!"))
-            add_next_piece(col_selection, 2)
+            while player_going:
+                col_selection = coerce_input(input("Player 2, make your selection (0-6)!"))
+                if col_selection >= 0:
+                    add_next_piece(col_selection, 2)
+                    player_going = False
 
         winner = get_winner(board)
         if winner > 0:
@@ -108,6 +126,9 @@ def run_game(turn, board, game_over):
 
         turn += 1
 
+
+# TODO: prevent user from adding to filled columns
+# TODO: make the column hint guide dynamic based off size of board?
 
 if __name__ == '__main__':
     turn_counter = 0

@@ -7,18 +7,16 @@ import numpy as np
 
 
 def create_board():
-    return np.zeros((6, 7))
+    return np.zeros((6, 7), int)
 
 
 def add_next_piece(col_selection, current_player):
-    print(col_selection)
     if is_valid_location(col_selection):
         board[get_next_open_row(col_selection)][col_selection] = current_player
 
 
 def is_valid_location(selection):
     if board[0][selection] == 0:
-        print("we valid!!")
         return True
     else:
         return False
@@ -30,7 +28,6 @@ def get_next_open_row(col_selection):
         col_vals.append(row[col_selection])
 
     for i, val in enumerate(col_vals):
-        print(val)
         if val > 0:
             return i-1
         elif int(val) == 0 and i == 5:
@@ -40,19 +37,49 @@ def get_next_open_row(col_selection):
 
 
 def horiz_winner(board):
-    #per row, check to see if any 4 sequential entries are all the same
-    list = []
-    i = 0
-    thisSelect = list[i:i+4]
-    pass
+    for row in board:
+        for i in range(0, 4):
+            this_select = set(row[i:i+4])
+            if len(this_select) == 1 and this_select.copy().pop() > 0:
+                return int(this_select.pop())
+
+    return 0
 
 
 def vert_winner(board):
-    pass
+    for i in range(0, 3):
+        rows = board[i:i+4]
+        for j in range(0, 7):
+            col_list = []
+            for row in rows:
+                col_list.append(row[j])
+
+            if len(set(col_list)) == 1 and set(col_list).copy().pop() > 0:
+                return set(col_list).pop()
+
+    return 0
+
+
+def reverse_board(board):
+    reversed_board = list()
+    for row in board:
+        reversed_board.append(list(row)[::-1])
+
+    return np.array(reversed_board)
 
 
 def diag_winner(board):
-    pass
+    boards = (board, reverse_board(board))
+    for each_board in boards:
+        for i in range(-2, 4):
+            diag = each_board.diagonal(i)
+            for j in range(0, len(diag)-3):
+                group_of_four = diag[j:j+4]
+                if len(set(group_of_four)) == 1 and set(group_of_four).copy().pop() > 0:
+                    return set(group_of_four).pop()
+
+    return 0
+
 
 
 def get_winner(board):
@@ -64,6 +91,7 @@ def get_winner(board):
 def run_game(turn, board, game_over):
     while not game_over:
         print(board)
+        print("  0 1 2 3 4 5 6  ")  # make this dynamic with width of board
 
         if turn % 2 == 0:
             col_selection = int(input("Player 1, make your selection (0-6)!"))
@@ -75,6 +103,8 @@ def run_game(turn, board, game_over):
         winner = get_winner(board)
         if winner > 0:
             game_over = True
+            print(board)
+            print("WE HAVE A WINNER! The winner is Player " + str(winner) + " on turn number " + str(turn))
 
         turn += 1
 

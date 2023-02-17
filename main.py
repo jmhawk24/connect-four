@@ -82,8 +82,21 @@ def get_winner(board):
     return horiz_winner(board) or vert_winner(board) or diag_winner(board)
 
 
+def col_is_full(board, col_selection):
+    return board[0][col_selection] > 0
+
+
+def is_col_available(board, col_selection):
+    if col_is_full(board, col_selection):
+        print("The column you picked is full.")
+        print("Pick another column.")
+        print("---")
+        return False
+    else:
+        return True
+
+
 def coerce_input(input):
-    coerced_input = -1
     try:
         coerced_input = int(input)
     except ValueError:
@@ -99,7 +112,6 @@ def coerce_input(input):
     return coerced_input
 
 
-
 def run_game(turn, board, game_over):
     while not game_over:
         print(board)
@@ -108,7 +120,7 @@ def run_game(turn, board, game_over):
         if turn % 2 == 0:
             while player_going:
                 col_selection = coerce_input(input("Player 1, make your selection (0-6)!"))
-                if col_selection >= 0:
+                if col_selection >= 0 and is_col_available(board, col_selection):
                     add_next_piece(col_selection, 1)
                     player_going = False
         else:
@@ -127,11 +139,10 @@ def run_game(turn, board, game_over):
         turn += 1
 
 
-# TODO: prevent user from adding to filled columns
-# TODO: make the column hint guide dynamic based off size of board?
-
 if __name__ == '__main__':
     turn_counter = 0
     board = create_board()
     game_over = False
     run_game(turn_counter, board, game_over)
+
+# TODO: make the column hint guide dynamic based off size of board?
